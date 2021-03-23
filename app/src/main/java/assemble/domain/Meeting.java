@@ -18,4 +18,8 @@ public class Meeting {
     private String imageUrl;
 
     private Long ownerId;
+
+    public void changeWith(Meeting source) {
+
+    }
 }
