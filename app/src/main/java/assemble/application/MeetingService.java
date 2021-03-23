@@ -29,7 +29,7 @@ public class MeetingService {
      * @return 전체 모임들.
      */
     public List<Meeting> getMeetings() {
-        return new ArrayList<Meeting>();
+        return meetingRepository.findAll();
     }
 
     /**
