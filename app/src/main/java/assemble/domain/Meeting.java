@@ -19,7 +19,13 @@ public class Meeting {
 
     private Long ownerId;
 
+    /**
+     * 모임 객체 내부 필드 값들을 변경한다.
+     *
+     * @param source 수정할 모임 내용
+     */
     public void changeWith(Meeting source) {
-
+        this.name = source.name;
+        this.description = source.description;
     }
 }
