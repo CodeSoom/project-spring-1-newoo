@@ -1,8 +1,8 @@
 package assemble.application;
 
+import assemble.application.errors.MeetingNotFoundException;
 import assemble.domain.Meeting;
 import assemble.domain.MeetingRepository;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,13 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @DisplayName("MeetingService의")
 class MeetingServiceTest {
-    private final Long givenId = 1L;
+    private final Long givenSavedId = 1L;
+    private final Long givenUnsavedId = 1L;
     private final String givenName = "사당 iOS개발";
     private final String givenDescription = "iOS 개발 공부해요";
     private final Long givenOwnerId = 1L;
@@ -30,7 +32,7 @@ class MeetingServiceTest {
     @BeforeEach
     void setUp() {
         meeting = Meeting.builder()
-                .id(givenId)
+                .id(givenSavedId)
                 .name(givenName)
                 .description(givenDescription)
                 .ownerId(givenOwnerId)
@@ -83,18 +85,40 @@ class MeetingServiceTest {
     @Nested
     @DisplayName("getMeeting 메서드는")
     class Describe_getMeeting {
+        private Long givenId;
+
+        @Nested
+        @DisplayName("저장되지 않은 모임의 식별자를 가지고 있다면")
+        class Context_with_unsaved_meeting_identifier {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+            }
+
+            @Test
+            @DisplayName("모임을 찾을 수 없다는 예외를 던진다.")
+            void it_throws_meeting_not_found_exception() {
+                assertThatThrownBy(
+                        () -> meetingService.getMeeting(givenId),
+                        "모임을 찾을 수 없다는 예외를 던져야 합니다."
+                ).isInstanceOf(MeetingNotFoundException.class);
+            }
+        }
+
         @Nested
         @DisplayName("저장된 모임의 식별자를 가지고 있다면")
         class Context_with_saved_meeting_identifier {
             @BeforeEach
             void setUp() {
-                given(meetingRepository.findById(givenId)).willReturn(Optional.of(meeting));
+                givenId = givenSavedId;
+
+                given(meetingRepository.findById(givenSavedId)).willReturn(Optional.of(meeting));
             }
 
             @Test
             @DisplayName("모임을 반환한다.")
             void it_returns_a_meeting() {
-                final Meeting found = meetingService.getMeeting(givenId);
+                final Meeting found = meetingService.getMeeting(givenSavedId);
                 assertThat(found.getName()).isEqualTo(givenName);
                 assertThat(found.getDescription()).isEqualTo(givenDescription);
             }
