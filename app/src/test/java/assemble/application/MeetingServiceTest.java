@@ -79,4 +79,25 @@ class MeetingServiceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("getMeeting 메서드는")
+    class Describe_getMeeting {
+        @Nested
+        @DisplayName("저장된 모임의 식별자를 가지고 있다면")
+        class Context_with_saved_meeting_identifier {
+            @BeforeEach
+            void setUp() {
+                given(meetingRepository.findById(givenId)).willReturn(Optional.of(meeting));
+            }
+
+            @Test
+            @DisplayName("모임을 반환한다.")
+            void it_returns_a_meeting() {
+                final Meeting found = meetingService.getMeeting(givenId);
+                assertThat(found.getName()).isEqualTo(givenName);
+                assertThat(found.getDescription()).isEqualTo(givenDescription);
+            }
+        }
+    }
 }
