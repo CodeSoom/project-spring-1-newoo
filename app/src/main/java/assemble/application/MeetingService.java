@@ -1,12 +1,12 @@
 package assemble.application;
 
+import assemble.application.errors.MeetingNotFoundException;
 import assemble.domain.Meeting;
 import assemble.domain.MeetingRepository;
 import assemble.dto.MeetingData;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +39,7 @@ public class MeetingService {
      * @return 주어진 식별자에 해당하는 모임.
      */
     public Meeting getMeeting(Long id) {
-        return null;
+        return meetingRepository.findById(id).orElseThrow(() -> new MeetingNotFoundException(id));
     }
 
     /**
