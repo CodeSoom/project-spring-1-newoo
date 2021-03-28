@@ -1,12 +1,14 @@
 package assemble.dto;
 
 import com.github.dozermapper.core.Mapping;
+import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
 
 /**
  * 모임 DTO.
  */
+@Builder
 public class MeetingData {
     private Long id;
 

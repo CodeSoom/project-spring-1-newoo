@@ -1,8 +1,11 @@
 package assemble.application;
 
+import assemble.dto.MeetingData;
 import assemble.errors.MeetingNotFoundException;
 import assemble.domain.Meeting;
 import assemble.domain.MeetingRepository;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,6 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,6 +35,8 @@ class MeetingServiceTest {
 
     @BeforeEach
     void setUp() {
+        Mapper mapper = DozerBeanMapperBuilder.buildDefault();
+
         meeting = Meeting.builder()
                 .id(givenSavedId)
                 .name(givenName)
@@ -122,6 +128,36 @@ class MeetingServiceTest {
                 assertThat(found.getName()).isEqualTo(givenName);
                 assertThat(found.getDescription()).isEqualTo(givenDescription);
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("createMeeting 메서드는")
+    class Describe_createMeeting {
+        @Test
+        @DisplayName("생성된 모임을 반환한다.")
+        void it_returns_created_meeting() {
+            given(meetingRepository.save(any(Meeting.class))).will(invocation -> {
+                Meeting source = invocation.getArgument(0);
+
+                return Meeting.builder()
+                        .id(givenSavedId)
+                        .name(givenName)
+                        .description(givenDescription)
+                        .ownerId(givenOwnerId)
+                        .build();
+            });
+
+            MeetingData meetingData = MeetingData.builder()
+                    .id(givenSavedId)
+                    .name(givenName)
+                    .description(givenDescription)
+                    .ownerId(givenOwnerId)
+                    .build();
+
+            final Meeting createdMeeting = meetingService.createMeeting(meetingData);
+            assertThat(createdMeeting.getName()).isEqualTo(givenName);
+            assertThat(createdMeeting.getDescription()).isEqualTo(givenDescription);
         }
     }
 }
