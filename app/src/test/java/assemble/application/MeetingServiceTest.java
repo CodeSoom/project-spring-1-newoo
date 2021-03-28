@@ -209,4 +209,33 @@ class MeetingServiceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("deleteMeeting 메서드는")
+    class Describe_deleteMeeting {
+        private Long givenId;
+
+        private Meeting subject() {
+            return meetingService.deleteMeeting(givenId);
+        }
+
+        @Nested
+        @DisplayName("저장된 모임의 식별자를 가지고 있다면")
+        class Context_with_saved_meeting_identifier {
+            @BeforeEach
+            void setUp() {
+                givenId = givenSavedId;
+            }
+
+            @Test
+            @DisplayName("모임을 삭제하고, 삭제한 모임을 반환한다.")
+            void it_delete_meeting_and_returns_deleted_meeting() {
+                final Meeting deleted = subject();
+                assertThat(deleted.getName()).isEqualTo(givenName);
+                assertThat(deleted.getDescription()).isEqualTo(givenDescription);
+
+                verify(meetingRepository).delete(any(Meeting.class));
+            }
+        }
+    }
 }
