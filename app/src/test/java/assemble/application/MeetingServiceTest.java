@@ -101,6 +101,10 @@ class MeetingServiceTest {
     class Describe_getMeeting {
         private Long givenId;
 
+        private Meeting subject() {
+            return meetingService.getMeeting(givenId);
+        }
+
         @Nested
         @DisplayName("저장되지 않은 모임의 식별자를 가지고 있다면")
         class Context_with_unsaved_meeting_identifier {
@@ -113,7 +117,7 @@ class MeetingServiceTest {
             @DisplayName("모임을 찾을 수 없다는 예외를 던진다.")
             void it_throws_meeting_not_found_exception() {
                 assertThatThrownBy(
-                        () -> meetingService.getMeeting(givenId),
+                        () -> subject(),
                         "모임을 찾을 수 없다는 예외를 던져야 합니다."
                 ).isInstanceOf(MeetingNotFoundException.class);
             }
@@ -132,7 +136,7 @@ class MeetingServiceTest {
             @Test
             @DisplayName("모임을 반환한다.")
             void it_returns_a_meeting() {
-                final Meeting found = meetingService.getMeeting(givenSavedId);
+                final Meeting found = subject();
                 assertThat(found.getName()).isEqualTo(givenName);
                 assertThat(found.getDescription()).isEqualTo(givenDescription);
             }
@@ -172,6 +176,10 @@ class MeetingServiceTest {
     class Describe_updateMeeting {
         private Long givenId;
 
+        private Meeting subject() {
+            return meetingService.updateMeeting(givenId, meetingData);
+        }
+
         @Nested
         @DisplayName("저장되지 않은 모임의 식별자를 가지고 있다면")
         class Context_with_unsaved_meeting_identifier {
@@ -184,7 +192,7 @@ class MeetingServiceTest {
             @DisplayName("모임을 찾을 수 없다는 예외를 던진다.")
             void it_throws_meeting_not_found_exception() {
                 assertThatThrownBy(
-                        () -> meetingService.updateMeeting(givenId, meetingData),
+                        () -> subject(),
                         "모임을 찾을 수 없다는 예외를 던져야 합니다."
                 ).isInstanceOf(MeetingNotFoundException.class);
             }
@@ -203,7 +211,7 @@ class MeetingServiceTest {
             @Test
             @DisplayName("모임을 수정하고, 수정된 모임을 반환한다.")
             void it_update_meeting_and_returns_updated_meeting() {
-                final Meeting updated = meetingService.updateMeeting(givenSavedId, meetingData);
+                final Meeting updated = subject();
                 assertThat(updated.getName()).isEqualTo(givenName);
                 assertThat(updated.getDescription()).isEqualTo(givenDescription);
             }
