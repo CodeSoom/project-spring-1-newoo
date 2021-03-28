@@ -220,6 +220,24 @@ class MeetingServiceTest {
         }
 
         @Nested
+        @DisplayName("저장되지 않은 모임의 식별자를 가지고 있다면")
+        class Context_with_unsaved_meeting_identifier {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+            }
+
+            @Test
+            @DisplayName("모임을 찾을 수 없다는 예외를 던진다.")
+            void it_throws_meeting_not_found_exception() {
+                assertThatThrownBy(
+                        () -> subject(),
+                        "모임을 찾을 수 없다는 예외를 던져야 합니다."
+                ).isInstanceOf(MeetingNotFoundException.class);
+            }
+        }
+
+        @Nested
         @DisplayName("저장된 모임의 식별자를 가지고 있다면")
         class Context_with_saved_meeting_identifier {
             @BeforeEach
