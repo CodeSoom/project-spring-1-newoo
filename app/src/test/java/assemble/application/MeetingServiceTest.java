@@ -32,12 +32,20 @@ class MeetingServiceTest {
     private MeetingService meetingService;
     private MeetingRepository meetingRepository;
     private Meeting meeting;
+    private MeetingData meetingData;
 
     @BeforeEach
     void setUp() {
         Mapper mapper = DozerBeanMapperBuilder.buildDefault();
 
         meeting = Meeting.builder()
+                .id(givenSavedId)
+                .name(givenName)
+                .description(givenDescription)
+                .ownerId(givenOwnerId)
+                .build();
+
+        meetingData = MeetingData.builder()
                 .id(givenSavedId)
                 .name(givenName)
                 .description(givenDescription)
@@ -134,9 +142,8 @@ class MeetingServiceTest {
     @Nested
     @DisplayName("createMeeting 메서드는")
     class Describe_createMeeting {
-        @Test
-        @DisplayName("생성된 모임을 반환한다.")
-        void it_returns_created_meeting() {
+        @BeforeEach
+        void setUp() {
             given(meetingRepository.save(any(Meeting.class))).will(invocation -> {
                 Meeting source = invocation.getArgument(0);
 
@@ -147,19 +154,41 @@ class MeetingServiceTest {
                         .ownerId(givenOwnerId)
                         .build();
             });
+        }
 
-            MeetingData meetingData = MeetingData.builder()
-                    .id(givenSavedId)
-                    .name(givenName)
-                    .description(givenDescription)
-                    .ownerId(givenOwnerId)
-                    .build();
-
-            final Meeting createdMeeting = meetingService.createMeeting(meetingData);
-            assertThat(createdMeeting.getName()).isEqualTo(givenName);
-            assertThat(createdMeeting.getDescription()).isEqualTo(givenDescription);
+        @Test
+        @DisplayName("모임을 생성하고, 생성된 모임을 반환한다.")
+        void it_create_meeting_and_returns_created_meeting() {
+            final Meeting created = meetingService.createMeeting(meetingData);
+            assertThat(created.getName()).isEqualTo(givenName);
+            assertThat(created.getDescription()).isEqualTo(givenDescription);
 
             verify(meetingRepository).save(any(Meeting.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("updateMeeting 메서드는")
+    class Describe_updateMeeting {
+        private Long givenId;
+
+        @Nested
+        @DisplayName("저장된 모임의 식별자를 가지고 있다면")
+        class Context_with_saved_meeting_identifier {
+            @BeforeEach
+            void setUp() {
+                givenId = givenSavedId;
+
+                given(meetingRepository.findById(givenSavedId)).willReturn(Optional.of(meeting));
+            }
+
+            @Test
+            @DisplayName("모임을 수정하고, 수정된 모임을 반환한다.")
+            void it_update_meeting_and_returns_updated_meeting() {
+                final Meeting updated = meetingService.updateMeeting(givenSavedId, meetingData);
+                assertThat(updated.getName()).isEqualTo(givenName);
+                assertThat(updated.getDescription()).isEqualTo(givenDescription);
+            }
         }
     }
 }
