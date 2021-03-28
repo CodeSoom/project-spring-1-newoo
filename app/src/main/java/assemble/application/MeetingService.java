@@ -65,7 +65,11 @@ public class MeetingService {
      * @return 수정한 모임
      */
     public Meeting updateMeeting(Long id, MeetingData meetingData) {
-        return null;
+        Meeting meeting = getMeeting(id);
+
+        meeting.changeWith(mapper.map(meetingData, Meeting.class));
+
+        return meeting;
     }
 
     /**
