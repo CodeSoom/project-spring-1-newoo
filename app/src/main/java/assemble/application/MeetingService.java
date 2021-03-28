@@ -79,6 +79,10 @@ public class MeetingService {
      * @return 삭제한 모임
      */
     public Meeting deleteMeeting(Long id) {
-        return null;
+        Meeting meeting = getMeeting(id);
+
+        meetingRepository.delete(meeting);
+
+        return meeting;
     }
 }

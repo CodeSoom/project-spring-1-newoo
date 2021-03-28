@@ -16,7 +16,7 @@ public interface JpaMeetingRepository
 
     Optional<Meeting> findById(Long id);
 
-    Meeting save(Meeting product);
+    Meeting save(Meeting meeting);
 
-    void delete(Meeting product);
+    void delete(Meeting meeting);
 }

@@ -225,6 +225,8 @@ class MeetingServiceTest {
             @BeforeEach
             void setUp() {
                 givenId = givenSavedId;
+
+                given(meetingRepository.findById(givenId)).willReturn(Optional.of(meeting));
             }
 
             @Test
