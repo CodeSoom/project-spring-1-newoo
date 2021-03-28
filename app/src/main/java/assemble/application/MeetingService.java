@@ -1,6 +1,6 @@
 package assemble.application;
 
-import assemble.application.errors.MeetingNotFoundException;
+import assemble.errors.MeetingNotFoundException;
 import assemble.domain.Meeting;
 import assemble.domain.MeetingRepository;
 import assemble.dto.MeetingData;
