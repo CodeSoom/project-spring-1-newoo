@@ -4,6 +4,7 @@ import assemble.errors.MeetingNotFoundException;
 import assemble.domain.Meeting;
 import assemble.domain.MeetingRepository;
 import assemble.dto.MeetingData;
+import com.github.dozermapper.core.Mapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,9 +16,12 @@ import java.util.List;
 @Service
 @Transactional
 public class MeetingService {
+    private final Mapper mapper;
     private final MeetingRepository meetingRepository;
 
-    public MeetingService(MeetingRepository meetingRepository) {
+    public MeetingService(Mapper dozerMapper,
+                          MeetingRepository meetingRepository) {
+        this.mapper = dozerMapper;
         this.meetingRepository = meetingRepository;
     }
 
@@ -45,10 +49,11 @@ public class MeetingService {
      * 주어진 데이터로 모임을 생성하고, 생성한 모임을 반환한다.
      *
      * @param meetingData 생성할 모임 데이터
-     * @return 생성된 모임.
+     * @return 생성된 모임
      */
     public Meeting createMeeting(MeetingData meetingData) {
-        return null;
+        Meeting meeting = mapper.map(meetingData, Meeting.class);
+        return meetingRepository.save(meeting);
     }
 
     /**

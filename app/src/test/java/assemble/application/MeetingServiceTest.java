@@ -45,7 +45,7 @@ class MeetingServiceTest {
                 .build();
 
         meetingRepository = mock(MeetingRepository.class);
-        meetingService = new MeetingService(meetingRepository);
+        meetingService = new MeetingService(mapper, meetingRepository);
     }
 
     @Nested
@@ -158,6 +158,8 @@ class MeetingServiceTest {
             final Meeting createdMeeting = meetingService.createMeeting(meetingData);
             assertThat(createdMeeting.getName()).isEqualTo(givenName);
             assertThat(createdMeeting.getDescription()).isEqualTo(givenDescription);
+
+            verify(meetingRepository).save(any(Meeting.class));
         }
     }
 }
