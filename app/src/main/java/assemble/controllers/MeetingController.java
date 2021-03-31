@@ -1,5 +1,6 @@
 package assemble.controllers;
 
+import assemble.application.MeetingService;
 import assemble.domain.Meeting;
 import assemble.dto.MeetingData;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/meetings")
 public class MeetingController {
+    private final MeetingService meetingService;
+
+    public MeetingController(MeetingService meetingService) {
+        this.meetingService = meetingService;
+    }
+
     @GetMapping
     public List<Meeting> list() {
-        return null;
+        return meetingService.getMeetings();
     }
 
     @GetMapping("{id}")
