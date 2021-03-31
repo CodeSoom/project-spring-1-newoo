@@ -77,10 +77,22 @@ class MeetingControllerTest {
 
             @Test
             @DisplayName("200 Ok와 비어있지 않은 모임리스트를 응답한다.")
-            void it_responds_200_ok_and_not_empty_list() throws Exception {
+            void it_responds_200_ok_and_not_empty_meeting_list() throws Exception {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isOk())
                         .andExpect(content().json(meetingJsonString));
+            }
+        }
+
+        @Nested
+        @DisplayName("저장된 모임이 없다면,")
+        class Context_without_meeting {
+            @Test
+            @DisplayName("200 Ok와 비어있는 모임리스트를 응답한다.")
+            void it_responds_200_ok_and_empty_meeting_list() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isOk())
+                        .andExpect(content().json("[]"));
             }
         }
     }
