@@ -2,6 +2,7 @@ package assemble.controllers;
 
 import assemble.application.MeetingService;
 import assemble.domain.Meeting;
+import assemble.dto.MeetingData;
 import assemble.errors.MeetingNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +25,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -144,7 +147,7 @@ class MeetingControllerTest {
             void it_returns_200_ok_and_meeting_contain_given_id() throws Exception {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isOk())
-                        .andExpect(content().string(meetingJsonString));
+                        .andExpect(content().json(meetingJsonString));
             }
         }
 
@@ -167,6 +170,28 @@ class MeetingControllerTest {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isNotFound());
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /meetings 요청은")
+    class Describe_post_meetings_request {
+        @BeforeEach
+        void setUp() {
+            requestBuilder = post("/meetings")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(meetingJsonString);
+        }
+
+        @Test
+        @DisplayName("모임을 추가하고, 201 Created와 추가된 모임을 응답한다.")
+        void it_add_meeting_and_respond_201_created_and_added_meeting() throws Exception {
+            given(meetingService.createMeeting(any(MeetingData.class)))
+                    .willReturn(meeting);
+
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isCreated())
+                    .andExpect(content().json(meetingJsonString));
         }
     }
 }
