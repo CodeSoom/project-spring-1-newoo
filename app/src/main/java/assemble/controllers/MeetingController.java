@@ -49,7 +49,7 @@ public class MeetingController {
             @PathVariable Long id,
             @RequestBody MeetingData meetingData
     ) {
-        return null;
+        return meetingService.updateMeeting(id, meetingData);
     }
 
     @DeleteMapping("{id}")
