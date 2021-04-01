@@ -43,6 +43,7 @@ class MeetingControllerTest {
     private Meeting meeting;
 
     private String meetingJsonString;
+    private String meetingListJsonString;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -55,7 +56,11 @@ class MeetingControllerTest {
 
         OutputStream outputStream = new ByteArrayOutputStream();
         ObjectMapper objectMapper = new ObjectMapper();
+
         objectMapper.writeValue(outputStream, List.of(meeting));
+        meetingListJsonString = outputStream.toString();
+
+        objectMapper.writeValue(outputStream, meeting);
         meetingJsonString = outputStream.toString();
     }
 
@@ -80,7 +85,7 @@ class MeetingControllerTest {
             void it_responds_200_ok_and_not_empty_meeting_list() throws Exception {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isOk())
-                        .andExpect(content().json(meetingJsonString));
+                        .andExpect(content().json(meetingListJsonString));
             }
         }
 
@@ -93,6 +98,32 @@ class MeetingControllerTest {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isOk())
                         .andExpect(content().json("[]"));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /meetings/{id} 요청은")
+    class Describe_get_meetings_id_request {
+        private Long givenId;
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 있다면")
+        class Context_with_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenSavedId;
+                requestBuilder = get("/meetings/%d", givenId);
+            }
+
+            @Test
+            @DisplayName("200 OK와 주어진 식별자에 해당하는 모임을 응답한다.")
+            void it_returns_200_ok_and_meeting_contain_given_id() throws Exception {
+                given(meetingService.getMeeting(givenId)).willReturn(meeting);
+
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isOk())
+                        .andExpect(content().json(meetingJsonString));
             }
         }
     }
