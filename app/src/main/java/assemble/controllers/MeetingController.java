@@ -41,7 +41,7 @@ public class MeetingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Meeting create(@RequestBody MeetingData meetingData) {
-        return null;
+        return meetingService.createMeeting(meetingData);
     }
 
     @PatchMapping("{id}")
