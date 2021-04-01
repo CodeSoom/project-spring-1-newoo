@@ -2,6 +2,7 @@ package assemble.controllers;
 
 import assemble.application.MeetingService;
 import assemble.domain.Meeting;
+import assemble.errors.MeetingNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class MeetingControllerTest {
     private final Long givenSavedId = 1L;
-    private final Long givenUnsavedId = 1L;
+    private final Long givenUnsavedId = 100L;
     private final String givenName = "사당 iOS개발";
     private final String givenDescription = "iOS 개발 공부해요";
     private final Long givenOwnerId = 1L;
@@ -135,7 +135,7 @@ class MeetingControllerTest {
 
                 subject();
 
-                given(meetingService.getMeeting(any(Long.class)))
+                given(meetingService.getMeeting(givenId))
                         .willReturn(meeting);
             }
 
@@ -156,6 +156,9 @@ class MeetingControllerTest {
                 givenId = givenUnsavedId;
 
                 subject();
+
+                given(meetingService.getMeeting(givenId))
+                        .willThrow(new MeetingNotFoundException(givenId));
             }
 
             @Test
