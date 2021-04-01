@@ -1,5 +1,6 @@
 package assemble.controllers;
 
+import assemble.dto.ErrorResponse;
 import assemble.errors.MeetingNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
