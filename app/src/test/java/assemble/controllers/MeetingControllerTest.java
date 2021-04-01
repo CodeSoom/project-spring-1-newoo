@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class MeetingControllerTest {
     private final Long givenSavedId = 1L;
+    private final Long givenUnsavedId = 1L;
     private final String givenName = "사당 iOS개발";
     private final String givenDescription = "iOS 개발 공부해요";
     private final Long givenOwnerId = 1L;
@@ -144,6 +145,24 @@ class MeetingControllerTest {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isOk())
                         .andExpect(content().string(meetingJsonString));
+            }
+        }
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 없다면")
+        class Context_without_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+
+                subject();
+            }
+
+            @Test
+            @DisplayName("404 Not Found를 응답한다.")
+            void it_returns_404_not_found() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isNotFound());
             }
         }
     }
