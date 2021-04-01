@@ -26,8 +26,10 @@ import java.io.OutputStream;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,9 +55,11 @@ class MeetingControllerTest {
     private RequestBuilder requestBuilder;
 
     private Meeting meeting;
+    private MeetingData meetingData;
 
     private String meetingJsonString;
     private String meetingListJsonString;
+    private String meetingDataJsonString;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -70,6 +74,11 @@ class MeetingControllerTest {
                 .ownerId(givenOwnerId)
                 .build();
 
+        meetingData = MeetingData.builder()
+                .name(givenName + "+")
+                .description(givenDescription + "+")
+                .build();
+
         OutputStream outputStream = new ByteArrayOutputStream();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(outputStream, List.of(meeting));
@@ -79,6 +88,11 @@ class MeetingControllerTest {
         objectMapper = new ObjectMapper();
         objectMapper.writeValue(outputStream, meeting);
         meetingJsonString = outputStream.toString();
+
+        outputStream = new ByteArrayOutputStream();
+        objectMapper = new ObjectMapper();
+        objectMapper.writeValue(outputStream, meetingData);
+        meetingDataJsonString = outputStream.toString();
     }
 
     @Nested
@@ -180,11 +194,11 @@ class MeetingControllerTest {
         void setUp() {
             requestBuilder = post("/meetings")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(meetingJsonString);
+                    .content(meetingDataJsonString);
         }
 
         @Test
-        @DisplayName("모임을 추가하고, 201 Created와 추가된 모임을 응답한다.")
+        @DisplayName("모임을 생성하고, 201 Created와 추가된 모임을 응답한다.")
         void it_add_meeting_and_respond_201_created_and_added_meeting() throws Exception {
             given(meetingService.createMeeting(any(MeetingData.class)))
                     .willReturn(meeting);
@@ -192,6 +206,50 @@ class MeetingControllerTest {
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isCreated())
                     .andExpect(content().json(meetingJsonString));
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH /meetings/{id} 요청은")
+    class Describe_patch_meetings_id_request {
+        private Long givenId;
+
+        private void subject() {
+            requestBuilder = patch("/meetings/{id}", givenId)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(meetingJsonString);
+        }
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 있다면")
+        class Context_with_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenSavedId;
+
+                subject();
+
+                given(meetingService.updateMeeting(eq(givenId), any(MeetingData.class)))
+                        .will(invocation -> {
+                            Long id = invocation.getArgument(0);
+                            MeetingData meetingData = invocation.getArgument(1);
+                            return Meeting.builder()
+                                    .id(id)
+                                    .name(meetingData.getName())
+                                    .description(meetingData.getDescription())
+                                    .ownerId(givenOwnerId)
+                                    .build();
+                        });
+            }
+
+            @Test
+            @DisplayName("모임을 수정하고, 200 Ok와 수정된 모임을 응답한다.")
+            void it_updates_meeting_and_responds_200_ok_and_updated_meeting() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isOk())
+                        .andExpect(content().json(meetingJsonString));
+            }
         }
     }
 }
