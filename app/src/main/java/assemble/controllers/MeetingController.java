@@ -35,7 +35,7 @@ public class MeetingController {
 
     @GetMapping("{id}")
     public Meeting detail(@PathVariable Long id) {
-        return null;
+        return meetingService.getMeeting(id);
     }
 
     @PostMapping
