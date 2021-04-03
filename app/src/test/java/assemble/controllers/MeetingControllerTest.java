@@ -290,9 +290,12 @@ class MeetingControllerTest {
         class Context_with_meeting_contain_given_id {
             @BeforeEach
             void setUp() {
-                givenId = givenUnsavedId;
+                givenId = givenSavedId;
 
                 subject();
+
+                given(meetingService.deleteMeeting(givenId))
+                        .willReturn(meeting);
             }
 
             @Test
@@ -301,7 +304,28 @@ class MeetingControllerTest {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isNoContent());
 
-                verify(meetingService).deleteMeeting(any(Long.class));
+                verify(meetingService).deleteMeeting(givenId);
+            }
+        }
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 없다면")
+        class Context_without_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+
+                subject();
+
+                given(meetingService.deleteMeeting(givenId.longValue()))
+                        .willThrow(new MeetingNotFoundException(givenId));
+            }
+
+            @Test
+            @DisplayName("404 Not Found를 응답한다.")
+            void it_respond_404_not_found() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isNotFound());
             }
         }
     }
