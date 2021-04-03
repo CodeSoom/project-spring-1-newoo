@@ -53,7 +53,8 @@ public class MeetingController {
     }
 
     @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable Long id) {
-        //
+        meetingService.deleteMeeting(id);
     }
 }
