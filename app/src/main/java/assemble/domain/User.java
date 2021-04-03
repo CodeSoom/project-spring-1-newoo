@@ -31,4 +31,23 @@ public class User {
 
     @Builder.Default
     private boolean deleted = false;
+
+    public User (Long id, String email, String name, String password, boolean deleted) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.deleted = deleted;
+    }
+
+    public User (Long id, String email, String name, String password) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.password = password;
+    }
+
+    public void changeWith(User source) {
+        //
+    }
 }
