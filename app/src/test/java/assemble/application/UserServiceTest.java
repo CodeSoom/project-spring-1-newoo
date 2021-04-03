@@ -4,6 +4,7 @@ import assemble.domain.Role;
 import assemble.domain.RoleRepository;
 import assemble.domain.User;
 import assemble.domain.UserRepository;
+import assemble.dto.UserModificationData;
 import assemble.dto.UserRegistrationData;
 import assemble.errors.UserEmailDuplicationException;
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.verify;
 @DisplayName("UserService의")
 class UserServiceTest {
     private final Long givenNewUserId = 77L;
+    private final Long givenExistedUserId = 7L;
     private final String givenNotExistedEmail = "newoo@codesoom.com";
     private final String givenExistedEmail = "existed@codesoom.com";
     private final String givenName = "newoo";
@@ -112,6 +116,49 @@ class UserServiceTest {
                         .isInstanceOf(UserEmailDuplicationException.class);
 
                 verify(userRepository).existsByEmail(givenExistedEmail);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("updateUser 메서드는")
+    class Describe_updateUser {
+        private UserModificationData modificationData;
+        private Long givenId;
+        private String givenUpdatedName = givenName + "+";
+
+        @Nested
+        @DisplayName("저장된 사용자의 식별자를 가지고 있다면")
+        class Context_with_saved_user_identifier {
+            @BeforeEach
+            void setUp() {
+                givenId = givenExistedUserId;
+
+                given(userRepository.findByIdAndDeletedIsFalse(givenExistedUserId))
+                        .willReturn(Optional.of(
+                                User.builder()
+                                        .id(givenExistedUserId)
+                                        .email(givenExistedEmail)
+                                        .name(givenName)
+                                        .password(givenPassword)
+                                        .build()));
+            }
+
+            @Test
+            @DisplayName("사용자 정보를 수정하고, 수정된 사용자 정보를 반환한다.")
+            void it_update_user_and_returns_updated_user() {
+                modificationData = UserModificationData.builder()
+                        .name(givenUpdatedName)
+                        .password(givenPassword)
+                        .build();
+
+                User user = userService.updateUser(givenId, modificationData, givenId);
+
+                assertThat(user.getId()).isEqualTo(givenId);
+                assertThat(user.getEmail()).isEqualTo(givenExistedEmail);
+                assertThat(user.getName()).isEqualTo(givenUpdatedName);
+
+                verify(userRepository).findByIdAndDeletedIsFalse(givenId);
             }
         }
     }
