@@ -7,6 +7,7 @@ import assemble.domain.UserRepository;
 import assemble.dto.UserModificationData;
 import assemble.dto.UserRegistrationData;
 import assemble.errors.UserEmailDuplicationException;
+import assemble.errors.UserNotFoundException;
 import com.github.dozermapper.core.Mapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,12 @@ public class UserService {
     public User updateUser(Long id,
                            UserModificationData modificationData,
                            Long userId) {
-        return null;
+        User user = findUser(id);
+
+        User source = mapper.map(modificationData, User.class);
+        user.changeWith(source);
+
+        return user;
     }
 
     /**
@@ -90,6 +96,7 @@ public class UserService {
      * @return 찾은 계정
      */
     private User findUser(Long id) {
-        return null;
+        return userRepository.findByIdAndDeletedIsFalse(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 }
