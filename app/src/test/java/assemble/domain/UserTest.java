@@ -21,12 +21,26 @@ class UserTest {
     class Describe_changeWith {
         @Test
         @DisplayName("사용자 정보를 변경한다.")
-        void changeWith() {
+        void it_change_user() {
             user.changeWith(User.builder()
                     .name("TEST")
                     .build());
 
             assertThat(user.getName()).isEqualTo("TEST");
+        }
+    }
+
+    @Nested
+    @DisplayName("destroy 메서드는")
+    class Describe_destroy {
+        @Test
+        @DisplayName("사용자 정보를 탈퇴 처리된 것으로 만든다.")
+        void it_make_user_state_be_withdrew() {
+            assertThat(user.isDeleted()).isFalse();
+
+            user.destroy();
+
+            assertThat(user.isDeleted()).isTrue();
         }
     }
 }
