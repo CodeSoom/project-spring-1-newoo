@@ -1,6 +1,7 @@
 package assemble.application;
 
 import assemble.domain.User;
+import assemble.dto.UserModificationData;
 import assemble.dto.UserRegistrationData;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,8 @@ public class UserService {
      * @param userId 수정을 요청한 계정의 식별자
      * @return 수정된 계정
      */
-    public User updateUser(Long id, UserModificationData modificationData,
+    public User updateUser(Long id,
+                           UserModificationData modificationData,
                            Long userId) {
         return null;
     }
