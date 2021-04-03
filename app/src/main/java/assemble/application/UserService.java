@@ -1,5 +1,7 @@
 package assemble.application;
 
+import assemble.domain.Role;
+import assemble.domain.RoleRepository;
 import assemble.domain.User;
 import assemble.domain.UserRepository;
 import assemble.dto.UserModificationData;
@@ -19,13 +21,16 @@ import javax.transaction.Transactional;
 public class UserService {
     private final Mapper mapper;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(Mapper mapper,
                        UserRepository userRepository,
+                       RoleRepository roleRepository,
                        PasswordEncoder passwordEncoder) {
         this.mapper = mapper;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -48,6 +53,8 @@ public class UserService {
                 mapper.map(registrationData, User.class));
 
         user.changePassword(registrationData.getPassword(), passwordEncoder);
+
+        roleRepository.save(new Role(user.getId(), "USER"));
 
         return user;
     }

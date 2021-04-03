@@ -47,7 +47,7 @@ class UserServiceTest {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
             userService = new UserService(
-                    mapper, userRepository, passwordEncoder);
+                    mapper, userRepository, roleRepository, passwordEncoder);
 
             given(userRepository.save(any(User.class))).will(invocation -> {
                 User source = invocation.getArgument(0);
