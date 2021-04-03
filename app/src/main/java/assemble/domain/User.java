@@ -48,19 +48,40 @@ public class User {
         this.password = password;
     }
 
+    /**
+     * 사용자 정보를 변경한다.
+     *
+     * @param source 변경할 사용자 정보
+     */
     public void changeWith(User source) {
         name = source.name;
     }
 
+    /**
+     * 비밀번호를 변경한다.
+     *
+     * @param password 변경할 비밀번호
+     * @param passwordEncoder 비밀번호 인코더
+     */
     public void changePassword(String password,
                                PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
 
+    /**
+     * 사용자를 탈퇴 처리한다.
+     */
     public void destroy() {
         deleted = true;
     }
 
+    /**
+     * 사용자 비밀번호 일치여부를 확인하여, 인증한다.
+     *
+     * @param password 사용자가 입력한 비밀번호
+     * @param passwordEncoder 비밀번호 인코더
+     * @return
+     */
     public boolean authenticate(String password,
                                 PasswordEncoder passwordEncoder) {
         return !deleted && passwordEncoder.matches(password, this.password);
