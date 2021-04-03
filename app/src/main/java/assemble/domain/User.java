@@ -52,6 +52,6 @@ public class User {
     }
 
     public void destroy() {
-        //
+        deleted = true;
     }
 }
