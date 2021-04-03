@@ -83,5 +83,23 @@ class UserTest {
                 assertThat(user.authenticate("xxx", passwordEncoder)).isFalse();
             }
         }
+
+        @Nested
+        @DisplayName("사용자가 탈퇴 유저라면")
+        class Context_when_user_is_withdrew {
+            @BeforeEach
+            void setUp() {
+                user = User.builder().deleted(true).build();
+            }
+
+            @Test
+            @DisplayName("인증 실패를 반환한다.")
+            void it_returns_authentication_fail() {
+                user.changePassword("test", passwordEncoder);
+
+                assertThat(user.authenticate("test", passwordEncoder)).isFalse();
+                assertThat(user.authenticate("xxx", passwordEncoder)).isFalse();
+            }
+        }
     }
 }
