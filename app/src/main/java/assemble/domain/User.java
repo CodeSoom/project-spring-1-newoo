@@ -63,6 +63,6 @@ public class User {
 
     public boolean authenticate(String password,
                                 PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(password, this.password);
+        return !deleted && passwordEncoder.matches(password, this.password);
     }
 }
