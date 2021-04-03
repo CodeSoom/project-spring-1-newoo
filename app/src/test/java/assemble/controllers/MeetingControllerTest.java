@@ -251,5 +251,26 @@ class MeetingControllerTest {
                         .andExpect(content().json(meetingJsonString));
             }
         }
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 없다면")
+        class Context_without_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+
+                subject();
+
+                given(meetingService.updateMeeting(eq(givenId), any(MeetingData.class)))
+                        .willThrow(new MeetingNotFoundException(givenId));
+            }
+
+            @Test
+            @DisplayName("404 Not Found를 응답한다.")
+            void it_respond_404_not_found() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isNotFound());
+            }
+        }
     }
 }
