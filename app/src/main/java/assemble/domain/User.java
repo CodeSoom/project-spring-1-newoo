@@ -48,6 +48,6 @@ public class User {
     }
 
     public void changeWith(User source) {
-        //
+        name = source.name;
     }
 }
