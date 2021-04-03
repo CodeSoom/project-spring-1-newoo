@@ -62,4 +62,26 @@ class UserTest {
             assertThat(user.getPassword()).isNotEqualTo("TEST");
         }
     }
+
+    @Nested
+    @DisplayName("authenticate 메서드는")
+    class Describe_authenticate {
+        @Nested
+        @DisplayName("사용자가 활성 유저라면")
+        class Context_when_user_is_active {
+            @BeforeEach
+            void setUp() {
+                user = User.builder().deleted(false).build();
+            }
+
+            @Test
+            @DisplayName("사용자의 비밀번호 일치여부를 반환한다.")
+            void it_returns_if_user_password_matched() {
+                user.changePassword("test", passwordEncoder);
+
+                assertThat(user.authenticate("test", passwordEncoder)).isTrue();
+                assertThat(user.authenticate("xxx", passwordEncoder)).isFalse();
+            }
+        }
+    }
 }

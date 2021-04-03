@@ -60,4 +60,9 @@ public class User {
     public void destroy() {
         deleted = true;
     }
+
+    public boolean authenticate(String password,
+                                PasswordEncoder passwordEncoder) {
+        return false;
+    }
 }
