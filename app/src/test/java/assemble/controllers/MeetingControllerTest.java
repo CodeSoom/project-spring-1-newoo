@@ -28,6 +28,8 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -270,6 +272,36 @@ class MeetingControllerTest {
             void it_respond_404_not_found() throws Exception {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isNotFound());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /meetings/{id} 요청은")
+    class Describe_delete_meetings_id_request {
+        private Long givenId;
+
+        private void subject() {
+            requestBuilder = delete("/meetings/{id}", givenId);
+        }
+
+        @Nested
+        @DisplayName("주어진 식별자에 해당하는 모임이 있다면")
+        class Context_with_meeting_contain_given_id {
+            @BeforeEach
+            void setUp() {
+                givenId = givenUnsavedId;
+
+                subject();
+            }
+
+            @Test
+            @DisplayName("204 No Content를 응답한다.")
+            void it_responds_204_no_content() throws Exception {
+                mockMvc.perform(requestBuilder)
+                        .andExpect(status().isNoContent());
+
+                verify(meetingService).deleteMeeting(any(Long.class));
             }
         }
     }
