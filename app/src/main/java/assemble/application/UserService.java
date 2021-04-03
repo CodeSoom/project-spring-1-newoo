@@ -1,8 +1,11 @@
 package assemble.application;
 
 import assemble.domain.User;
+import assemble.domain.UserRepository;
 import assemble.dto.UserModificationData;
 import assemble.dto.UserRegistrationData;
+import com.github.dozermapper.core.Mapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,14 +16,38 @@ import javax.transaction.Transactional;
 @Service
 @Transactional
 public class UserService {
+    private final Mapper mapper;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(Mapper mapper,
+                       UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
+        this.mapper = mapper;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     /**
      * 계정을 등록하고, 등록된 계정을 반환한다.
      *
      * @param registrationData 등록할 계정 데이터
      * @return 등록된 계정
      */
-    public User registerUser(UserRegistrationData registrationData) {
-        return null;
+    public User registerUser(UserRegistrationData registrationData) throws Exception {
+        String email = registrationData.getEmail();
+
+        // 이메일 중복 체크
+        if (userRepository.existsByEmail(email)) {
+            throw new Exception();
+        }
+
+        User user = userRepository.save(
+                mapper.map(registrationData, User.class));
+
+        user.changePassword(registrationData.getPassword(), passwordEncoder);
+
+        return user;
     }
 
     /**
