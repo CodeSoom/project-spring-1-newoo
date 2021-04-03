@@ -1,6 +1,7 @@
 package assemble.application;
 
 import assemble.domain.User;
+import assemble.dto.UserRegistrationData;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
