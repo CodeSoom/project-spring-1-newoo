@@ -1,5 +1,7 @@
 package assemble.application;
 
+import assemble.domain.Role;
+import assemble.domain.RoleRepository;
 import assemble.domain.User;
 import assemble.domain.UserRepository;
 import assemble.dto.UserRegistrationData;
@@ -29,6 +31,7 @@ class UserServiceTest {
     private UserService userService;
 
     private final UserRepository userRepository = mock(UserRepository.class);
+    private final RoleRepository roleRepository = mock(RoleRepository.class);
 
     private User user;
 
@@ -84,6 +87,7 @@ class UserServiceTest {
                 assertThat(user.getName()).isEqualTo(givenName);
 
                 verify(userRepository).save(any(User.class));
+                verify(roleRepository).save(any(Role.class));
             }
         }
     }
