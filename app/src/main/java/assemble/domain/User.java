@@ -3,6 +3,7 @@ package assemble.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -49,6 +50,10 @@ public class User {
 
     public void changeWith(User source) {
         name = source.name;
+    }
+
+    public void changePassword(String password,
+                               PasswordEncoder passwordEncoder) {
     }
 
     public void destroy() {
