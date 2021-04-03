@@ -4,6 +4,7 @@ import assemble.domain.User;
 import assemble.domain.UserRepository;
 import assemble.dto.UserModificationData;
 import assemble.dto.UserRegistrationData;
+import assemble.errors.UserEmailDuplicationException;
 import com.github.dozermapper.core.Mapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,14 @@ public class UserService {
      *
      * @param registrationData 등록할 계정 데이터
      * @return 등록된 계정
+     * @throws UserEmailDuplicationException 사용자의 이메일이 이미 존재할 경우
      */
-    public User registerUser(UserRegistrationData registrationData) throws Exception {
+    public User registerUser(UserRegistrationData registrationData) {
         String email = registrationData.getEmail();
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(email)) {
-            throw new Exception();
+            throw new UserEmailDuplicationException(email);
         }
 
         User user = userRepository.save(
