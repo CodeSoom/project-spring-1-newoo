@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 @DisplayName("MeetingService의")
 class MeetingServiceTest {
     private final Long givenSavedId = 1L;
-    private final Long givenUnsavedId = 1L;
+    private final Long givenUnsavedId = 100L;
     private final String givenName = "사당 iOS개발";
     private final String givenDescription = "iOS 개발 공부해요";
     private final Long givenOwnerId = 1L;
