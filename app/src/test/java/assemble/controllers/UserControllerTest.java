@@ -3,6 +3,7 @@ package assemble.controllers;
 import assemble.application.UserService;
 import assemble.domain.User;
 import assemble.dto.UserRegistrationData;
+import assemble.dto.UserResultData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,9 +50,10 @@ class UserControllerTest {
     private RequestBuilder requestBuilder;
 
     private User user;
+    private UserResultData resultData;
     private UserRegistrationData registrationData;
 
-    private String userJsonString;
+    private String resultDataJsonString;
     private String registrationDataJsonString;
     private OutputStream outputStream;
     private ObjectMapper objectMapper;
@@ -79,7 +81,7 @@ class UserControllerTest {
             objectMapper.writeValue(outputStream, registrationData);
             registrationDataJsonString = outputStream.toString();
 
-            requestBuilder = post("/meetings")
+            requestBuilder = post("/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(registrationDataJsonString);
 
@@ -90,10 +92,16 @@ class UserControllerTest {
                     .password(givenPassword)
                     .build();
 
+            resultData = UserResultData.builder()
+                    .id(givenNewUserId)
+                    .email(givenNotExistedEmail)
+                    .name(givenName)
+                    .build();
+
             outputStream = new ByteArrayOutputStream();
             objectMapper = new ObjectMapper();
-            objectMapper.writeValue(outputStream, user);
-            userJsonString = outputStream.toString();
+            objectMapper.writeValue(outputStream, resultData);
+            resultDataJsonString = outputStream.toString();
         }
 
         @Test
@@ -104,7 +112,7 @@ class UserControllerTest {
 
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isCreated())
-                    .andExpect(content().json(userJsonString));
+                    .andExpect(content().json(resultDataJsonString));
         }
     }
 }
