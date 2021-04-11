@@ -299,7 +299,7 @@ class MeetingControllerTest {
             }
 
             @Test
-            @DisplayName("204 No Content를 응답한다.")
+            @DisplayName("삭제에 성공했다는 의미로 204 No Content를 응답한다.")
             void it_responds_204_no_content() throws Exception {
                 mockMvc.perform(requestBuilder)
                         .andExpect(status().isNoContent());
